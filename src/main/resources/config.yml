@@ -1,0 +1,99 @@
+# manius_dungeons - ETAP 14 (faza PREPARED i opt-in auto-testy)
+# UWAGA: zmiany blokow mozliwe WYLACZNIE w osobnym, jawnym swiecie testowym.
+settings:
+  timezone: Europe/Warsaw
+  world: S16_wojny_1
+  prefix: '&9&lS16 SMP 2 &8» &r'
+  reminder-check-minutes: 1
+  admin-alert-before-hours: 24
+  unplanned:
+    daily-warning-enabled: true
+    daily-warning-time: '12:00'
+    missing-slot-warning-enabled: true
+    missing-slot-time: '17:00'
+    missing-slot-advance-minutes: 60
+  default-duration-minutes: 60
+  reveal-before-minutes: 30
+  restore-after-close: true
+  auto-close-active-tests: true # TYLKO dopasowany, juz aktywny dungeon testowy; nigdy normalny SMP.
+  regenerate-before-start-minutes: 180
+  close-warnings-minutes: [30, 15, 10, 5, 1]
+  lootpool-valid-days: 3
+  lootpool-warning-hours: 24
+safety:
+  enable-world-mutations: false # Stara flaga ignorowana - NIE wlacza budowania na SMP.
+  require-country-check-for-site-results: true # Brak manius_gildie blokuje ogloszenie wstepnego kandydata.
+  require-worldguard-check-for-site-results: true # Brak WorldGuard blokuje ogloszenie wstepnego kandydata.
+  enable-test-world-mutations: false # TESTY: wymaga osobnego swiata i jawnego ustawienia true.
+  # ETAP 18: osierocone/uszkodzone recovery BLOKUJE generowanie i chroni caly swiat testowy.
+  # NIE USUWAJ plikow recoveries/ aby obejsc te blokade; zachowaj kopie i logi.
+  test-auto-prepare:
+    enabled: false # DODATKOWA zgoda na AUTOMATYCZNE testowe budowanie przed zaplanowanym startem.
+    # Ustaw obie wspolrzedne recznie w dedykowanym swiecie testowym (odpowiednio wczytanym).
+    # Bez anchor-x i anchor-z generator automatyczny nie startuje.
+    # anchor-x: 200
+    # anchor-z: 200
+    # Limit auto testu: 20 pokoi. Dla ustawienia 'losowo' ogranicza do zakresu 15-20.
+    # Brak wczytanych chunkow / kolizja / brak migawki = brak wydarzenia.
+
+  allow-test-container-overwrite: false # OPTYMALNIE FALSE. Opcjonalny TEST zwyklych skrzyn, beczek i shulkerow bez NBT/PDC i loot tables.
+  test-world-name: 'S16_DUNGEONS_TEST' # Nie moze byc rowny settings.world.
+  require-country-verification-for-test-build: true # Brak pluginu gildii / blad odczytu = ODMOWA testowego budowania.
+  require-worldguard-verification-for-test-build: true # Brak WG / blad odczytu = ODMOWA testowego budowania.
+  # Tylko na calkowicie oddzielnym swiecie testowym i z niezaleznym backupem
+  # mozna swiadomie zmienic powyzsze flagi na false. Na SMP NIE wolno tego robic.
+  blocks-per-tick: 350 # Limit liczby zmienianych blokow na tick.
+  max-mutation-millis-per-tick: 5 # Dodatkowy limit czasu pracy na tick: od 1 do 25 ms.
+  test-entrance-count: 1 # ETAP 22: 1-3 TESTOWE szyby; ocenplan liczy wszystkie, bez rzeczywistego skanu powierzchni.
+  subsurface-max-samples: 1024 # ETAP 24: nie wiecej niz 8192 odczytow blokow w probkowym audycie; bez ladowania chunkow.
+  subsurface-max-cave-fraction: 0.40 # Powyzej 40% probek powietrza odmowa; wykryty plyn lub obce bloki takze blokuja test.
+  max-test-blocks: 100000
+  max-restore-verification-retries: 2 # 0-5, po nieudanym sprawdzeniu nigdy nie raportuj RESTORED; wstrzymaj i zaalarmuj admina.
+  minimum-free-recovery-bytes: 536870912 # 512 MiB dodatkowego wolnego miejsca przed testowa generacja.
+  site-search-attempts: 48 # Proby losowych wspolrzednych tylko na WCZESNIEJ zaladowanych chunkach.
+  site-search-radius-blocks: 192 # Promien od gracza w osiach X/Z; max 512.
+  site-search-attempts-per-tick: 1 # Limit obliczen na glownym watku.
+  entrance-radius-from-zero: 3500
+  world-coordinate-limit: 4000
+  closed-protection-margin: 50 # Podczas zamykania i rollbacku; ACTIVE test wciaz read-only z marginesem 3
+  default-rooms-min: 15
+  default-rooms-max: 50
+  manual-rooms-max: 100
+  entrance-count-min: 1
+  entrance-count-max: 10
+mobs:
+  enable-test-mobs: false # DODATKOWA zgoda: tylko test-world-name, wymaga safety.enable-test-world-mutations.
+  occupied-room-fraction: 0.5 # Połowa pokoi poza wejściem: do jednego potwora w pokoju w etapie testowym.
+  boosted-fraction: 0.5
+  boosted-health-multiplier: 1.2
+  boosted-damage-multiplier: 1.2
+  boss-chance-per-dungeon: 0.05
+  miniboss-chance-per-dungeon: 0.25
+  mace-chance-per-boss-reward-roll: 0.0001
+  boss-reward-rolls: 3
+loot:
+  weak-chest-probability: 0.65
+  default-weights:
+    weak: 100
+    good: 100
+  # ETAP 11: wyłącznie oddzielny świat TESTOWY, oprócz safety.enable-test-world-mutations=true.
+  # Gracze mogą zabierać przedmioty ze skrzyń, lecz nie niszczyć ich ani ścian.
+  enable-test-chests: false
+  test-chest-max-items: 4
+
+# Harmonogramy zapisywane są oddzielnie w schedules.yml.
+
+traps:
+  enable-test-traps: false # Osobna zgoda: fizyczne pulapki TYLKO na dedykowanym swiecie testowym.
+  room-fraction: 0.20 # Czesc pokoi z pulapka (poza pierwszym pokojem).
+  # COBWEB: opoznia; MAGMA: obrazenia przy kontakcie. Srodek pokoju pozostaje drozny.
+
+entrances:
+  # ETAP 12: wszystkie funkcje tylko dla naprawde wygenerowanych, aktywnych TESTOW.
+  enable-test-magic-barrier: true # Blokada wejscia do obszaru testu przed godzina otwarcia i po zamknieciu.
+  test-public-announcements: false # ZGODA NA PUBLICZNY CZAT + TITLE: tylko rzeczywiscie przygotowany dungeon w swiecie TESTOWYM.
+  test-notice-grace-seconds: 90 # Po spoznieniu wiekszym niz 90 s NIE wysylaj nieaktualnego "za 30/10 minut" (0-300).
+  test-title-30-minutes: true # 30 min przed startem: duzy Title i wiadomosc na czacie (wymaga test-public-announcements: true).
+  test-details-10-minutes: true # 10 min przed startem: faktyczna liczba wejsc i dlugosc wydarzenia na czacie (wymaga zgody powyzej).
+  # Wylaczony test-public-announcements oznacza brak publicznych powiadomien o testach na glownym SMP.
+  enable-test-bluemap-markers: false # Opcjonalnie BlueMap, rowniez TYLKO test-world-name.
