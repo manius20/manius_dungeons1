@@ -1,0 +1,42 @@
+name: manius_dungeons - buduj JAR
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Release consistency checks
+        run: python3 scripts/check-project.py
+      - name: Offline safety tests (no Paper API)
+        run: bash scripts/test-offline.sh
+      - name: Read-only entrance survey offline API-stub test
+        run: bash scripts/test-live-entrance-stub.sh
+      - name: Read-only underground survey offline API-stub test
+        run: bash scripts/test-live-subsurface-stub.sh
+      - name: Build (Maven)
+        run: |
+          set -o pipefail
+          mvn -B --no-transfer-progress clean verify 2>&1 | tee build.log
+      - name: Upload diagnostic log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manius_dungeons-build-log
+          path: build.log
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: manius_dungeons-JAR
+          path: target/manius_dungeons-*.jar
+          if-no-files-found: error
